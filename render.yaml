@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: roadsense-response
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT "app:create_app()"
+    healthCheckPath: /api/health
+    autoDeploy: false

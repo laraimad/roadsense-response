@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RoadSense Response turns vehicle pothole detections into a repair-ready incident queue.">
+  <title>RoadSense Response</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="RoadSense Response home">
+        <span class="brand-mark"><i></i><i></i><i></i></span>
+        <span>RoadSense <strong>Response</strong></span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <button class="nav-link active" data-view="operations">Operations</button>
+        <button class="nav-link" data-view="about">How it works</button>
+      </nav>
+      <div class="top-actions">
+        <span class="live-indicator"><i></i> Demo data</span>
+        <a class="button secondary" href="/api/export.csv">Export queue</a>
+      </div>
+    </header>
+
+    <main>
+      <section id="operations-view" class="view active">
+        <div class="hero">
+          <div>
+            <p class="eyebrow">Road maintenance command center</p>
+            <h1>Turn road detections into <span>repair decisions.</span></h1>
+            <p class="hero-copy">RoadSense combines visual, impact, GPS, and recurrence evidence so teams can verify hazards and move them through a clear repair workflow.</p>
+          </div>
+          <div class="hero-note">
+            <span>Priority rule</span>
+            <strong>Severity 70+</strong>
+            <p>Urgent incidents stay visible until a team schedules or resolves them.</p>
+          </div>
+        </div>
+
+        <div class="stats-grid" aria-label="Incident summary">
+          <article class="stat-card featured"><span>Active incidents</span><strong id="stat-active">-</strong><small>Awaiting closure</small></article>
+          <article class="stat-card"><span>Urgent</span><strong id="stat-urgent">-</strong><small>Severity 70 or higher</small></article>
+          <article class="stat-card"><span>Resolved</span><strong id="stat-resolved">-</strong><small>Repair cycle completed</small></article>
+          <article class="stat-card"><span>Average severity</span><strong id="stat-average">-</strong><small>Across demo incidents</small></article>
+        </div>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Live operations</p>
+            <h2>Incident triage</h2>
+          </div>
+          <div class="filters">
+            <label class="search-label">Search
+              <input id="search-filter" type="search" placeholder="Road, ID, or team" autocomplete="off">
+            </label>
+            <label>Status
+              <select id="status-filter">
+                <option value="all">All statuses</option>
+                <option value="new">New</option>
+                <option value="verified">Verified</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="in_repair">In repair</option>
+                <option value="resolved">Resolved</option>
+                <option value="dismissed">Dismissed</option>
+              </select>
+            </label>
+            <label>Severity
+              <select id="severity-filter">
+                <option value="all">All levels</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </label>
+            <label>Sort
+              <select id="sort-filter">
+                <option value="priority">Highest priority</option>
+                <option value="newest">Newest detection</option>
+                <option value="updated">Recently updated</option>
+              </select>
+            </label>
+            <button id="clear-filters" class="clear-filters" type="button">Clear</button>
+          </div>
+        </div>
+
+        <div class="operations-grid">
+          <section class="panel map-panel" aria-labelledby="map-title">
+            <div class="panel-heading">
+              <div><span>Test route</span><h3 id="map-title">Cyberjaya incident map</h3></div>
+              <span class="map-legend"><i></i> Click a marker</span>
+            </div>
+            <div id="incident-map" class="incident-map" role="img" aria-label="Relative map of pothole incidents">
+              <div class="road road-one"></div><div class="road road-two"></div><div class="road road-three"></div>
+              <span class="map-label label-one">MMU</span><span class="map-label label-two">Tech district</span>
+              <div id="map-markers"></div>
+            </div>
+            <div class="queue-heading"><span>Repair queue</span><strong id="queue-count">0 incidents</strong></div>
+            <div id="incident-list" class="incident-list"></div>
+          </section>
+
+          <aside id="incident-detail" class="panel detail-panel" aria-live="polite">
+            <div class="empty-state"><span>RS</span><h3>Select an incident</h3><p>Choose a map marker or queue item to inspect its evidence and update the repair workflow.</p></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="about-view" class="view about-view">
+        <div class="about-hero">
+          <p class="eyebrow">From detection to action</p>
+          <h1>One focused workflow for safer roads.</h1>
+          <p>Raw detections are not useful until a person can understand the evidence, make a decision, and hand work to a repair team.</p>
+        </div>
+        <div class="process-grid">
+          <article><span>01</span><h3>Detect</h3><p>A vehicle captures camera, accelerometer, GPS, and model signals.</p></article>
+          <article><span>02</span><h3>Prioritize</h3><p>Evidence is combined into an explainable severity score and repeat detections are grouped.</p></article>
+          <article><span>03</span><h3>Respond</h3><p>An operator verifies the incident, assigns a team, tracks status, and exports the repair queue.</p></article>
+        </div>
+        <div class="architecture-card">
+          <div><p class="eyebrow">Challenge prototype</p><h2>Built as an isolated product layer</h2></div>
+          <p>This app uses copied, anonymized demo records. It does not import, modify, or depend on the original FYP source, models, configuration, labels, or live data.</p>
+          <button id="reset-demo" class="button danger">Reset demo changes</button>
+        </div>
+        <div class="limitations-card">
+          <p class="eyebrow">Responsible use</p>
+          <h2>A decision aid, not an engineering certification.</h2>
+          <p>The priority score is experimental. A trained person must verify the road condition before repair, closure, or safety decisions.</p>
+        </div>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="status"></div>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
